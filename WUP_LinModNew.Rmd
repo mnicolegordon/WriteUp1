@@ -1,0 +1,159 @@
+---
+title: "linear model from Web"
+author: "Nikki Gordon"
+date: "Summer 2022"
+output:
+   html_document:
+         toc: true
+         toc_depth: 5
+        
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Read about the data from the website where it is staged.  Then form three regression models; Model1 is SIMS~ARM, Model2 is SIMS~GRIP, and Model3 is SIMS~ARM+GRIP. For each model find a 95% prediction interval of SIMS given a value of 94  for GRIP and 88 for ARM. Compare Model1 with Model3 using anova. Write it up in a markdown document, push the project up to your github account and submit it back to canvas as link. 
+
+```{r}
+predictionpts<-data.frame(ARM=88, GRIP=94) 
+predictionpts
+```
+
+```{r include=FALSE}
+require(tidyverse)
+require(tigerstats)
+require(rgl)
+require(knitr)
+
+```
+
+```{r}
+data <- read.csv(file="https://onlinestatbook.com/case_studies_rvls/physical_strength/data.txt",sep="",header=TRUE)  
+
+```
+
+## Model 1 SIM~ARMS
+
+
+### scatterplot
+```{r}
+plot(SIMS~ARM,data=data)
+```
+
+
+```{r}
+basicNN <- ggplot(data,aes(y=SIMS,x=ARM))
+```
+
+```{r}
+basicNN + geom_point()
+```
+
+```{r}
+basicNN + geom_point(aes(col=ARM)) 
+```
+
+### Numerical results
+
+```{r}
+cor(SIMS~ARM,data=data)
+```
+
+### Inferential  (Build model.1)
+
+```{r}
+model.1 <- lm(SIMS~ARM,data=data)
+summary.lm(model.1)
+```
+
+#### Predict at target point
+```{r}
+new<-data.frame(ARM=88,GRIP=94)
+predict(model.1,new)
+```
+
+
+
+#### scatterplot with model fit
+```{r}
+basicNN + geom_point(aes(col=SIMS)) + geom_smooth(method=lm)
+```   
+
+
+
+## Model 2 SIM~GRIP
+
+### Now add in scatterplot
+```{r}
+plot(SIMS~GRIP,data=data)
+```
+
+
+```{r}
+basicNN <- ggplot(data,aes(y=SIMS,x=GRIP))
+```
+
+```{r}
+basicNN + geom_point()
+```
+
+```{r}
+basicNN + geom_point(aes(col=GRIP)) 
+```
+
+### Numerical results 
+```{r}
+cor(SIMS~GRIP,data=data)
+```
+
+### Inferential  (Build model.2)
+```{r}
+model.2 <- lm(SIMS~GRIP,data=data)
+summary.lm(model.2)
+```  
+
+#### predict model.2 at target point
+```{r}
+new<-data.frame(ARM=88,GRIP=94)
+predict(model.2,new)
+```
+#### now add the model fit to our plot for model.2
+```{r}
+basicNN + geom_point(aes(col=GRIP)) + geom_smooth(method=lm)
+```     
+
+
+## Model 3 SIM~ARM+GRIP
+
+### Numerical results (cor)
+
+
+  
+### Inferential  (Build 2-dimentional model.3)
+
+````{r}
+advNN <- ggplot(data,aes(y=SIMS,x=ARM,z=GRIP))
+```
+```{r}
+model.3 <- lm(SIMS~ARM + GRIP,data=data)
+summary.lm(model.3)
+``` 
+
+#### predict model.3 at target point
+```{r}
+new<-data.frame(ARM=88,GRIP=94)
+predict(model.3,new)
+```  
+
+## Comparing nested models ANOVA Test
+```{r}
+anova(model.1,model.2)
+anova(model.2,model.3)
+anova(model.1,model.3)
+```
+### Model.1 vs Model.3
+### Model.2 vs Model.3
+
+## Informally compare Model.1 with model.2
+
